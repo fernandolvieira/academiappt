@@ -22,16 +22,9 @@
             background: rgba(30, 41, 59, 0.85);
             backdrop-filter: blur(10px);
         }
-        .btn-option:hover {
-            transform: translateX(5px);
-            border-color: #fca5a5;
-        }
-        .btn-nn:hover {
-            transform: scale(1.05);
-        }
-        .transition-all {
-            transition: all 0.3s ease;
-        }
+        .btn-option:hover { transform: translateX(5px); border-color: #fca5a5; }
+        .btn-nn:hover { transform: scale(1.05); }
+        .transition-all { transition: all 0.3s ease; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col p-4">
@@ -50,7 +43,6 @@
                 <p id="timer" class="font-mono font-bold text-xl text-yellow-400">40:00</p>
             </div>
         </div>
-        
         <div class="grid grid-cols-2 gap-4">
             <div>
                 <div class="flex justify-between text-xs mb-1">
@@ -81,12 +73,10 @@
             <p class="text-gray-300 mb-6 leading-relaxed">
                 Vocês têm 40 minutos para provar seu valor. 20 missões aleatórias foram selecionadas do grande pergaminho. Sobrevivam a elas e encarem a rodada relâmpago "Ninja ou Noob".
             </p>
-            
             <div class="mb-6 text-left">
                 <label class="block text-sm font-bold text-yellow-400 mb-2">Nome do Grupo / Dupla:</label>
                 <input type="text" id="group-name" class="w-full bg-gray-800 text-white border border-gray-600 rounded-lg p-3 focus:outline-none focus:border-red-500" placeholder="Ex: Time 7, Dupla do Caos...">
             </div>
-
             <button onclick="startGame()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-full shadow-lg shadow-red-500/50 transition-all transform hover:scale-105">
                 <i class="fas fa-play mr-2"></i> Iniciar Exame
             </button>
@@ -96,12 +86,9 @@
         <div id="mission-screen" class="hidden flex-col gap-4">
             <div class="glass rounded-xl p-6 anime-border relative">
                 <span class="absolute -top-3 -left-3 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg" id="mission-number">Missão 1/20</span>
-                
                 <h2 id="mission-title" class="text-xl font-bold text-yellow-400 mb-3 mt-2">Título</h2>
                 <p id="mission-context" class="text-gray-300 mb-6 text-sm leading-relaxed border-l-4 border-gray-500 pl-4"></p>
-                
                 <h3 class="font-semibold text-white mb-4"><i class="fas fa-question-circle text-blue-400 mr-2"></i>Qual é a sua ação?</h3>
-                
                 <div id="options-container" class="flex flex-col gap-3"></div>
             </div>
         </div>
@@ -110,12 +97,9 @@
         <div id="nn-screen" class="hidden flex-col gap-4">
             <div class="glass rounded-xl p-8 anime-border relative text-center">
                 <span class="absolute -top-3 -left-3 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg" id="nn-number">Rodada Relâmpago</span>
-                
                 <h2 class="text-2xl font-bold text-white mb-2">Ninja ou Noob?</h2>
                 <p class="text-gray-400 text-sm mb-8">Decida rapidamente se a atitude abaixo é de um mestre ou de um amador.</p>
-                
                 <p id="nn-statement" class="text-xl font-medium text-yellow-300 mb-10 h-16 flex items-center justify-center border-y border-gray-600 py-4"></p>
-                
                 <div class="grid grid-cols-2 gap-4">
                     <button onclick="answerNN('Ninja')" class="btn-nn bg-gradient-to-r from-blue-700 to-blue-900 border-2 border-blue-400 rounded-xl p-6 text-white font-bold text-xl shadow-lg shadow-blue-500/30 transition-all flex flex-col items-center justify-center gap-2">
                         <i class="fas fa-user-ninja text-3xl"></i> NINJA
@@ -127,20 +111,28 @@
             </div>
         </div>
 
-        <!-- Tela de Fim de Jogo -->
+        <!-- Tela de Fim de Jogo com Leaderboard -->
         <div id="end-screen" class="hidden glass rounded-xl p-8 text-center anime-border">
             <i id="end-icon" class="fas fa-trophy text-5xl text-yellow-500 mb-4"></i>
             <h1 id="end-title" class="text-3xl font-bold text-white mb-2">Exame Concluído!</h1>
             <p id="end-rank" class="text-xl text-red-400 font-bold mb-4">Rank Final: Genin</p>
             <p id="end-message" class="text-gray-300 mb-6">Processando resultados...</p>
             
-            <div class="bg-gray-800 p-4 rounded-lg mb-6">
+            <div class="bg-gray-800 p-4 rounded-lg mb-4">
                 <h3 class="font-bold text-yellow-400 mb-2">Relatório do Esquadrão <span id="final-group-name"></span>:</h3>
                 <p>Chakra (XP): <span id="final-xp" class="font-bold text-blue-400">0</span></p>
                 <p>HP Restante: <span id="final-hp" class="font-bold text-green-400">100</span>%</p>
             </div>
             
-            <p id="save-status" class="text-sm font-bold text-yellow-500 mb-4 animate-pulse">Enviando pergaminho de resultados aos mestres...</p>
+            <p id="save-status" class="text-sm font-bold text-yellow-500 mb-6 animate-pulse">Enviando pergaminho aos mestres...</p>
+
+            <!-- Leaderboard -->
+            <div id="leaderboard" class="bg-gray-900 border border-yellow-500 rounded-lg p-5 hidden text-left">
+                <h3 class="text-xl font-bold text-yellow-400 mb-4 text-center"><i class="fas fa-crown text-yellow-500 mr-2"></i>Top 3 Esquadrões Ninja</h3>
+                <ul id="leaderboard-list" class="flex flex-col gap-3">
+                    <li class="text-center text-gray-400 text-sm animate-pulse">Buscando os maiores guerreiros na planilha...</li>
+                </ul>
+            </div>
         </div>
     </main>
 
@@ -366,71 +358,71 @@
                 context: "Durante os ensaios, a equipe nota que você repete 'né', 'tipo assim' e 'então' a cada frase. Qual a estratégia ninja para curar isso?",
                 options: [
                     { text: "Avisar no início da apresentação que esse é seu jeito de falar.", xp: 0, hp: -15, feedback: "Isso soa amador e não resolve o problema." },
-                    { text: "Treinar o uso de pausas curtas e silenciosas no lugar das palavras de preenchimento.", xp: 50, hp: 0, feedback: "Excelente! O silêncio soa como reflexão; o 'né' soa como insegurança.", correct: true },
+                    { text: "Treinar o uso de pausas curtas e silenciosas no lugar das palavras de preenchimento.", xp: 50, hp: 0, feedback: "Excelente! O silêncio soa reflexivo; o 'né' soa como insegurança.", correct: true },
                     { text: "Falar cada vez mais rápido para não dar tempo de usar os tiques.", xp: 0, hp: -20, feedback: "Acelerar apenas cria novos problemas de dicção." }
                 ]
             },
             {
                 title: "Postura da Estátua",
-                context: "Seu colega apresenta com os braços cruzados ou com a barriga escorada na mesa do professor. Como você avalia essa postura?",
+                context: "Seu colega apresenta com os braços cruzados ou com a barriga escorada na mesa. Como você avalia essa postura?",
                 options: [
-                    { text: "Desleixada e defensiva. O ninja deve se posicionar com postura ereta, sem se escorar e com braços abertos.", xp: 50, hp: 0, feedback: "Corretíssimo. A postura corporal fala antes da sua voz.", correct: true },
+                    { text: "Desleixada e defensiva. O ninja deve se posicionar com postura ereta, sem se escorar.", xp: 50, hp: 0, feedback: "Corretíssimo. A postura corporal fala antes da sua voz.", correct: true },
                     { text: "Tranquila. Mostra que ele está confortável com o ambiente.", xp: 0, hp: -20, feedback: "Conforto em excesso parece desrespeito à plateia." },
-                    { text: "Boa, pois poupa energia para projetar a voz.", xp: 0, hp: -10, feedback: "Postura ereta na verdade ajuda a respirar e projetar melhor a voz." }
+                    { text: "Boa, pois poupa energia para projetar a voz.", xp: 0, hp: -10, feedback: "Postura ereta na verdade ajuda a respirar." }
                 ]
             },
             {
                 title: "O Pânico do 'Deu Branco'",
-                context: "No meio da sua fala, você esquece completamente a próxima frase. O silêncio toma conta por 3 segundos. O que fazer?",
+                context: "No meio da sua fala, você esquece a próxima frase. O silêncio toma conta por 3 segundos. O que fazer?",
                 options: [
                     { text: "Pedir desculpas repetidas vezes, dizer que está nervoso e sair correndo.", xp: 0, hp: -25, feedback: "Fugir é o fim da linha para um Ninja." },
-                    { text: "Respirar fundo, olhar suas anotações com calma (ou o slide) e retomar de onde lembrar, sem pânico.", xp: 50, hp: 0, feedback: "Perfeito! A plateia nem se importa com o branco, desde que você mantenha a calma.", correct: true },
+                    { text: "Respirar fundo, olhar suas anotações com calma e retomar de onde lembrar.", xp: 50, hp: 0, feedback: "Perfeito! A plateia nem se importa, desde que você mantenha a calma.", correct: true },
                     { text: "Fingir que tossiu e passar a palavra abruptamente pro colega.", xp: 10, hp: -10, feedback: "Não jogue o problema para os outros." }
                 ]
             },
             {
                 title: "A Armadilha do Cinema",
-                context: "Sua equipe tem 10 minutos para apresentar e decidiu usar um vídeo ilustrativo do YouTube. Qual deve ser o limite desse vídeo?",
+                context: "Sua equipe tem 10 minutos para apresentar e decidiu usar um vídeo. Qual deve ser o limite desse vídeo?",
                 options: [
-                    { text: "Colocar o vídeo de 7 minutos e falar apenas 3 minutos.", xp: 0, hp: -20, feedback: "O professor quer avaliar você, não o dono do canal do YouTube." },
-                    { text: "No máximo 1 a 2 minutos. O vídeo é um auxílio, não o protagonista.", xp: 50, hp: 0, feedback: "Sensato! Multimídia deve complementar sua fala, não substituí-la.", correct: true },
-                    { text: "Assistir o vídeo no mudo enquanto vocês lêem as legendas em voz alta.", xp: 0, hp: -15, feedback: "Experiência terrível e redundante." }
+                    { text: "Colocar o vídeo de 7 minutos e falar apenas 3 minutos.", xp: 0, hp: -20, feedback: "O professor quer avaliar você, não o dono do vídeo." },
+                    { text: "No máximo 1 a 2 minutos. O vídeo é um auxílio, não o protagonista.", xp: 50, hp: 0, feedback: "Sensato! Multimídia deve complementar sua fala.", correct: true },
+                    { text: "Assistir o vídeo no mudo enquanto lêem as legendas em voz alta.", xp: 0, hp: -15, feedback: "Experiência terrível e redundante." }
                 ]
             },
             {
                 title: "A Direção do Olhar",
-                context: "Você é muito tímido e tem medo de olhar para a turma. Qual o truque dos mestres para manter o contato visual adequado?",
+                context: "Você é muito tímido e tem medo de olhar para a turma. Qual o truque dos mestres?",
                 options: [
                     { text: "Olhar para as próprias mãos o tempo todo.", xp: 0, hp: -15, feedback: "Quebra a conexão totalmente com a plateia." },
-                    { text: "Distribuir o olhar pelas pessoas. Se estiver nervoso, olhe para a testa ou pouco acima da cabeça delas.", xp: 50, hp: 0, feedback: "Exato! Passa a sensação de contato visual sem o peso da intimidade.", correct: true },
-                    { text: "Olhar fixamente e sem piscar para o professor.", xp: 0, hp: -20, feedback: "Isso intimida o avaliador e ignora o resto da turma." }
+                    { text: "Distribuir o olhar. Se estiver nervoso, olhe para a testa ou acima da cabeça das pessoas.", xp: 50, hp: 0, feedback: "Exato! Passa a sensação de contato sem o peso da intimidade.", correct: true },
+                    { text: "Olhar fixamente e sem piscar para o professor.", xp: 0, hp: -20, feedback: "Ignora o resto da turma." }
                 ]
             },
             {
-                title: "Chuva de Shurikens (Perguntas da Plateia)",
-                context: "Alguém da plateia faz uma pergunta cuja resposta você não sabe de jeito nenhum. Como você escapa com honra?",
+                title: "Chuva de Shurikens",
+                context: "Alguém faz uma pergunta cuja resposta você não sabe de jeito nenhum. Como escapar?",
                 options: [
-                    { text: "Inventar uma resposta muito complexa com palavras difíceis para confundi-lo.", xp: 0, hp: -25, feedback: "Mentir em público destrói sua credibilidade." },
-                    { text: "Admitir que não tem a resposta exata agora, mas prometer pesquisar e responder depois, ou perguntar o que a turma acha.", xp: 50, hp: 0, feedback: "Honestidade é o caminho ninja. Transforme em oportunidade.", correct: true },
-                    { text: "Atacar o colega perguntando por que ele está querendo te prejudicar.", xp: 0, hp: -30, feedback: "Defensiva agressiva, você acaba de perder a sala toda." }
+                    { text: "Inventar uma resposta muito complexa com palavras difíceis.", xp: 0, hp: -25, feedback: "Mentir em público destrói sua credibilidade." },
+                    { text: "Admitir que não tem a resposta exata, mas prometer pesquisar ou perguntar à turma.", xp: 50, hp: 0, feedback: "Honestidade é o caminho ninja.", correct: true },
+                    { text: "Atacar o colega perguntando por que ele quer te prejudicar.", xp: 0, hp: -30, feedback: "Defensiva agressiva, você perde a sala toda." }
                 ]
             },
             {
                 title: "O Pergaminho de Backup",
-                context: "Você montou a apresentação linda no PC de casa. Como você garante que ela vai rodar na escola?",
+                context: "Você montou a apresentação linda no PC de casa. Como garante que ela vai rodar na escola?",
                 options: [
-                    { text: "Leva apenas no seu pendrive com fita adesiva estragado.", xp: 0, hp: -20, feedback: "Confiar em um único meio físico é suicídio." },
-                    { text: "Salva em nuvem (Drive), manda pro próprio email, leva no pendrive E exporta em PDF para caso o PowerPoint falhe.", xp: 50, hp: 0, feedback: "Um verdadeiro Ninja da Redundância! Preparo impecável.", correct: true },
-                    { text: "Espera que alguém da equipe tenha lembrado de salvar.", xp: 0, hp: -30, feedback: "A responsabilidade era sua. Missão falha." }
+                    { text: "Leva apenas no seu pendrive com fita adesiva.", xp: 0, hp: -20, feedback: "Confiar em um único meio físico é perigoso." },
+                    { text: "Salva na nuvem, manda pro email, leva no pendrive E exporta em PDF de segurança.", xp: 50, hp: 0, feedback: "Um verdadeiro Ninja da Redundância!", correct: true },
+                    { text: "Espera que alguém da equipe tenha lembrado de salvar.", xp: 0, hp: -30, feedback: "Missão falha." }
                 ]
             },
             {
                 title: "O Ritual de Calmaria",
-                context: "Faltam 2 minutos para você subir no palco. Seu coração acelera, mãos suam. O que a doutrina ensina?",
+                context: "Faltam 2 minutos. Seu coração acelera. O que a doutrina ensina?",
                 options: [
-                    { text: "Tomar dois energéticos para ligar no 220v.", xp: 0, hp: -20, feedback: "Aumenta a ansiedade e gera tremedeira na voz." },
-                    { text: "Respirar fundo e devagar, focar no fato de que você domina o tema e lembrar que a plateia torce pelo seu sucesso.", xp: 50, hp: 0, feedback: "Controle absoluto do Chakra! O nervosismo é normal, o foco ajuda a canalizá-lo.", correct: true },
-                    { text: "Começar a ler os slides da equipe inteira freneticamente.", xp: 0, hp: -10, feedback: "Só aumenta o caos mental. Essa hora é de focar." }
+                    { text: "Tomar dois energéticos para ligar no 220v.", xp: 0, hp: -20, feedback: "Aumenta a ansiedade e a tremedeira." },
+                    { text: "Respirar fundo e devagar, focar que você domina o tema e a plateia torce por você.", xp: 50, hp: 0, feedback: "Controle absoluto do Chakra!", correct: true },
+                    { text: "Ler os slides freneticamente.", xp: 0, hp: -10, feedback: "Só aumenta o caos mental." }
                 ]
             }
         ];
@@ -483,7 +475,7 @@
             groupName = input;
             document.getElementById('group-display-name').innerText = groupName;
             
-            // Seleciona 20 questões aleatórias do pool principal (30 questões)
+            // Seleciona 20 questões aleatórias do pool
             selectedMissions = [...missions].sort(() => Math.random() - 0.5).slice(0, 20);
 
             document.getElementById('start-screen').classList.add('hidden');
@@ -512,7 +504,6 @@
             document.getElementById('hp-bar').style.width = `${hp}%`;
             document.getElementById('hp-text').innerText = `${hp}/100`;
             
-            // XP máximo: 20 questões * 50xp + 20 NN * 10xp = 1200 xp máximo possível agora.
             const maxXP = 1200; 
             const xpPercent = Math.min((xp / maxXP) * 100, 100);
             document.getElementById('xp-bar').style.width = `${xpPercent}%`;
@@ -549,7 +540,6 @@
             const optionsContainer = document.getElementById('options-container');
             optionsContainer.innerHTML = '';
             
-            // Embaralha sempre as alternativas da questão carregada
             const shuffledOptions = [...m.options].sort(() => Math.random() - 0.5);
 
             shuffledOptions.forEach((opt, index) => {
@@ -671,18 +661,51 @@
                 rank: document.getElementById('player-rank').innerText
             };
 
+            // Post para salvar
             fetch(GOOGLE_SHEETS_WEBHOOK, {
                 method: 'POST',
                 mode: 'no-cors', 
                 headers: { 'Content-Type': 'text/plain' },
                 body: JSON.stringify(payload)
             }).then(() => {
-                statusEl.innerText = "✓ Resultados gravados no pergaminho dos Mestres (Planilha)!";
-                statusEl.className = "text-sm font-bold text-green-400 mt-4";
+                statusEl.innerText = "✓ Resultados gravados no pergaminho!";
+                statusEl.className = "text-sm font-bold text-green-400 mb-6";
+                // Chama a função para buscar o leaderboard após salvar
+                loadLeaderboard();
             }).catch(err => {
                 statusEl.innerText = "Erro ao enviar resultados. Avise o professor.";
-                statusEl.className = "text-sm font-bold text-red-500 mt-4";
+                statusEl.className = "text-sm font-bold text-red-500 mb-6";
             });
+        }
+
+        function loadLeaderboard() {
+            const lbContainer = document.getElementById('leaderboard');
+            const lbList = document.getElementById('leaderboard-list');
+            lbContainer.classList.remove('hidden');
+
+            // Faz uma requisição GET para pegar o Top 3
+            fetch(GOOGLE_SHEETS_WEBHOOK)
+                .then(response => response.json())
+                .then(data => {
+                    lbList.innerHTML = '';
+                    if (data.length === 0) {
+                        lbList.innerHTML = '<li class="text-gray-400 text-center">Nenhum guerreiro registrado ainda.</li>';
+                        return;
+                    }
+                    data.forEach((ninja, index) => {
+                        let icon = index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉';
+                        let color = index === 0 ? 'text-yellow-400' : index === 1 ? 'text-gray-300' : 'text-orange-400';
+                        lbList.innerHTML += `
+                            <li class="flex justify-between items-center bg-gray-800 p-3 rounded-lg border border-gray-700 shadow-md">
+                                <span class="font-bold ${color} text-lg">${icon} ${ninja.grupo}</span>
+                                <span class="text-sm text-blue-400 font-mono bg-gray-900 px-3 py-1 rounded">${ninja.xp} XP | <i class="fas fa-heart text-green-500 text-xs"></i> ${ninja.hp}</span>
+                            </li>
+                        `;
+                    });
+                })
+                .catch(err => {
+                    lbList.innerHTML = '<li class="text-red-400 text-sm text-center">Falha ao se conectar com os pergaminhos da nuvem.</li>';
+                });
         }
     </script>
 </body>
