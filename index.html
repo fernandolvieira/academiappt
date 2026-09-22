@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exame Shinobi: A Arte da Apresentação</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #e2e8f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: radial-gradient(#1e293b 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .anime-border {
+            border: 2px solid #ef4444;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+        .glass {
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(10px);
+        }
+        .btn-option:hover {
+            transform: translateX(5px);
+            border-color: #fca5a5;
+        }
+        .transition-all {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col p-4">
+
+    <!-- Header / HUD do Jogador -->
+    <header class="glass sticky top-0 z-50 rounded-xl p-4 anime-border mb-6 flex flex-col gap-3">
+        <div class="flex justify-between items-center w-full">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-user-ninja text-red-500 text-2xl"></i>
+                <div>
+                    <p class="text-xs text-gray-400 uppercase tracking-wider">Rank Atual</p>
+                    <p id="player-rank" class="font-bold text-red-400">Estudante da Academia</p>
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="text-xs text-gray-400 uppercase tracking-wider">Tempo Restante</p>
+                <p id="timer" class="font-mono font-bold text-xl text-yellow-400">40:00</p>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+            <!-- Barra de HP -->
+            <div>
+                <div class="flex justify-between text-xs mb-1">
+                    <span class="text-green-400"><i class="fas fa-heart"></i> HP (Vida)</span>
+                    <span id="hp-text">100/100</span>
+                </div>
+                <div class="w-full bg-gray-700 rounded-full h-2">
+                    <div id="hp-bar" class="bg-green-500 h-2 rounded-full transition-all" style="width: 100%"></div>
+                </div>
+            </div>
+            <!-- Barra de XP -->
+            <div>
+                <div class="flex justify-between text-xs mb-1">
+                    <span class="text-blue-400"><i class="fas fa-star"></i> Chakra (XP)</span>
+                    <span id="xp-text">0</span>
+                </div>
+                <div class="w-full bg-gray-700 rounded-full h-2">
+                    <div id="xp-bar" class="bg-blue-500 h-2 rounded-full transition-all" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Área Principal do Jogo -->
+    <main id="game-container" class="flex-grow flex flex-col justify-center max-w-2xl mx-auto w-full pb-10">
+        
+        <!-- Tela Inicial -->
+        <div id="start-screen" class="glass rounded-xl p-8 text-center anime-border">
+            <h1 class="text-3xl font-bold text-red-500 mb-4">Exame de Sobrevivência: Apresentador Ninja</h1>
+            <p class="text-gray-300 mb-6 leading-relaxed">
+                Você tem 40 minutos para provar seu valor. Diferente de um quiz comum, você enfrentará <strong>15 missões reais</strong> baseadas nos pergaminhos do mestre Fernando. Leia com atenção, discuta com sua equipe e escolha o caminho certo. Se o seu HP chegar a zero, você falha no exame.
+            </p>
+            <button onclick="startGame()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-full shadow-lg shadow-red-500/50 transition-all transform hover:scale-105">
+                <i class="fas fa-play mr-2"></i> Iniciar Exame
+            </button>
+        </div>
+
+        <!-- Container da Missão -->
+        <div id="mission-screen" class="hidden flex-col gap-4">
+            <div class="glass rounded-xl p-6 anime-border relative">
+                <span class="absolute -top-3 -left-3 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg" id="mission-number">Missão 1/15</span>
+                
+                <h2 id="mission-title" class="text-xl font-bold text-yellow-400 mb-3 mt-2">Título</h2>
+                <p id="mission-context" class="text-gray-300 mb-6 text-sm leading-relaxed border-l-4 border-gray-500 pl-4"></p>
+                
+                <h3 class="font-semibold text-white mb-4"><i class="fas fa-question-circle text-blue-400 mr-2"></i>Qual é a sua ação?</h3>
+                
+                <div id="options-container" class="flex flex-col gap-3">
+                    <!-- Opções injetadas via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela de Fim de Jogo -->
+        <div id="end-screen" class="hidden glass rounded-xl p-8 text-center anime-border">
+            <i id="end-icon" class="fas fa-trophy text-5xl text-yellow-500 mb-4"></i>
+            <h1 id="end-title" class="text-3xl font-bold text-white mb-2">Exame Concluído!</h1>
+            <p id="end-rank" class="text-xl text-red-400 font-bold mb-4">Rank Final: Genin</p>
+            <p id="end-message" class="text-gray-300 mb-6">Você completou o percurso.</p>
+            
+            <div class="bg-gray-800 p-4 rounded-lg mb-6">
+                <h3 class="font-bold text-yellow-400 mb-2">Seus Status:</h3>
+                <p>XP Total: <span id="final-xp" class="font-bold text-blue-400">0</span></p>
+                <p>HP Restante: <span id="final-hp" class="font-bold text-green-400">100</span>%</p>
+            </div>
+            
+            <button onclick="location.reload()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full transition-all">
+                Tentar Novamente
+            </button>
+        </div>
+    </main>
+
+    <!-- Modal de Feedback (Sensei) -->
+    <div id="feedback-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+        <div class="bg-gray-800 border-2 border-yellow-500 rounded-xl p-6 max-w-md w-full text-center relative shadow-2xl shadow-yellow-500/20">
+            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Sensei" alt="Sensei" class="w-20 h-20 mx-auto bg-gray-700 rounded-full mb-4 border-2 border-gray-500">
+            <h2 id="feedback-title" class="text-2xl font-bold mb-2">Feedback</h2>
+            <p id="feedback-text" class="text-gray-300 text-sm mb-6"></p>
+            <button onclick="nextMission()" class="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-8 rounded-full transition-all w-full">
+                Continuar
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Banco de Dados das Missões Baseadas no PDF do Fernando
+        const missions = [
+            {
+                title: "A Forja dos Slides",
+                context: "Você e sua equipe estão montando a apresentação no PowerPoint. O colega 'João' copia três parágrafos de texto da Wikipedia e cola em um único slide, dizendo que 'assim ninguém esquece o que falar'. Como você corrige essa situação com base no pergaminho das regras?",
+                options: [
+                    { text: "Deixa o texto, mas pede para ele ler bem rápido durante a apresentação.", xp: 0, hp: -20, feedback: "Erro crítico! A plateia não quer ver você lendo slides." },
+                    { text: "Reduz para um texto menor e coloca duas imagens para ilustrar.", xp: 10, hp: -10, feedback: "Quase. A regra diz apenas UMA imagem por slide." },
+                    { text: "Remove os parágrafos. Usa recursos audiovisuais, deixando apenas UMA frase e UMA imagem por slide, reservando a explicação para a fala.", xp: 50, hp: 0, feedback: "Exato! Slides não devem ter muito texto. O texto serve apenas para guiar a explicação verbal.", correct: true }
+                ]
+            },
+            {
+                title: "O Ritual de Preparação",
+                context: "Falta uma semana para a apresentação. Sua equipe dividiu as falas. Um integrante sugere: 'Vamos apenas ler o papel na hora, não precisamos ensaiar, improviso é a alma do ninja'. O que a doutrina de apresentação diz sobre isso?",
+                options: [
+                    { text: "Você deve estudar incansavelmente até que o assunto flua de forma natural, como uma conversa entre amigos. Ensaiar é essencial.", xp: 50, hp: 0, feedback: "Perfeito! A naturalidade não vem do improviso, mas de muito estudo e ensaio.", correct: true },
+                    { text: "Ele está certo. Ensaiar deixa a apresentação robótica. O ideal é decorar apenas os tópicos e falar o que vier à mente.", xp: 0, hp: -20, feedback: "Errado! Sem ensaio, vocês vão gaguejar e perder a organização." },
+                    { text: "Vocês devem decorar o texto palavra por palavra e repetir mecanicamente.", xp: 10, hp: -10, feedback: "Decorar gera apresentações robóticas. O objetivo é dominar o tema para fluir naturalmente." }
+                ]
+            },
+            {
+                title: "A Revisão Final",
+                context: "Vocês terminaram de montar slides lindos e chamativos que facilitam o entendimento. Está tudo pronto para salvar no pen drive. Qual é o ÚLTIMO passo crucial antes de fechar o arquivo?",
+                options: [
+                    { text: "Adicionar transições de chamas e explosões em todos os slides para impressionar.", xp: 0, hp: -10, feedback: "Transições exageradas distraem. Foco no conteúdo!" },
+                    { text: "Verificar rigorosamente erros gramaticais e de ortografia.", xp: 50, hp: 0, feedback: "Corretíssimo! Um erro de ortografia num slide gigante destrói a credibilidade do grupo.", correct: true },
+                    { text: "Imprimir cópias de todos os slides para entregar ao professor.", xp: 10, hp: -5, feedback: "Não é exigido nas regras, e desperdiça papel. A revisão ortográfica é que é obrigatória." }
+                ]
+            },
+            {
+                title: "O Genjutsu do Apagão (Imprevistos)",
+                context: "É o dia da apresentação. Vocês são chamados à frente, mas a lâmpada do projetor queima misteriosamente e um membro do grupo não veio à aula. O silêncio toma conta da sala. Qual é a postura de um verdadeiro ninja?",
+                options: [
+                    { text: "Pedir desculpas ao professor, explicar que o colega faltou e pedir para apresentar na próxima semana.", xp: 0, hp: -30, feedback: "Não dê desculpas! O mundo real não perdoa falhas no palco." },
+                    { text: "Ficar reclamando da escola e da falta de estrutura enquanto tentam consertar o cabo.", xp: 0, hp: -20, feedback: "Reclamar perde o tempo precioso da apresentação e a paciência da plateia." },
+                    { text: "Não dar desculpas e se adaptar. Fazer a apresentação verbalmente, cobrindo a parte do colega que faltou com maestria.", xp: 50, hp: 0, feedback: "Sensacional! Esteja pronto para imprevistos. O show tem que continuar.", correct: true }
+                ]
+            },
+            {
+                title: "Os Primeiros Segundos",
+                context: "O projetor está arrumado e o cronômetro começa a rodar. Você está frente a frente com a plateia. Como você inicia a sua fala para garantir que todos prestem atenção?",
+                options: [
+                    { text: "Inicia cumprimentando os presentes, se apresentando e destacando a importância do tema para eles e para a sociedade.", xp: 50, hp: 0, feedback: "Excelente abertura! Educação e relevância logo de cara prendem a atenção.", correct: true },
+                    { text: "Vai direto ao primeiro tópico do slide para não perder tempo com formalidades.", xp: 0, hp: -15, feedback: "Frio demais. Sem se apresentar e mostrar a importância, a plateia não se importa com o tema." },
+                    { text: "Começa contando uma piada longa sobre um assunto aleatório para quebrar o gelo.", xp: 10, hp: -10, feedback: "Humor é bom, mas precisa ter foco. Primeiro cumprimente e mostre a importância." }
+                ]
+            },
+            {
+                title: "A Regra dos 3 Minutos",
+                context: "Você cumpriu os cumprimentos, mas percebe que a turma do fundo está olhando o celular. O manual diz que você tem 3 minutos para conquistar a plateia. Que artifício você usa?",
+                options: [
+                    { text: "Grita para que todos prestem atenção e ameace tirar pontos da nota de quem estiver no celular.", xp: 0, hp: -20, feedback: "Postura agressiva e rude! Isso afasta a plateia." },
+                    { text: "Expõe um problema que a sua apresentação vai solucionar, diz algo impactante sobre o tema ou faz uma pergunta para eles interagirem.", xp: 50, hp: 0, feedback: "Isso mesmo! Dizer coisas impactantes, interagir, resolver problemas ou citar pessoas importantes são os melhores artifícios.", correct: true },
+                    { text: "Muda de slide rapidamente, passando fotos coloridas em sequência para forçá-los a olhar.", xp: 10, hp: -10, feedback: "Visual ajuda, mas a conquista vem da sua argumentação e interação intelectual." }
+                ]
+            },
+            {
+                title: "O Centro do Universo",
+                context: "Durante o desenvolvimento do tema, você precisa decidir para onde olhar e em quem focar sua energia. Qual é a regra fundamental sobre o foco da sua apresentação?",
+                options: [
+                    { text: "O foco deve ser agradar o professor para garantir a nota máxima.", xp: 10, hp: -10, feedback: "O professor avalia, mas não é o único ali. Existe algo maior." },
+                    { text: "O foco deve ser os slides, garantindo que você leu tudo corretamente.", xp: 0, hp: -20, feedback: "Nunca dê as costas para focar nos slides!" },
+                    { text: "A sua plateia é o seu centro de atenção. O foco é facilitar o entendimento dela.", xp: 50, hp: 0, feedback: "Perfeito! Desenvolva seu tema sempre pensando em como a plateia vai entender melhor.", correct: true }
+                ]
+            },
+            {
+                title: "Trabalho em Equipe",
+                context: "Seu colega está no meio da explicação da parte dele, mas você lembrou de um detalhe importantíssimo que ele esqueceu de mencionar. O que você faz?",
+                options: [
+                    { text: "Interrompe ele educadamente e complementa a informação na mesma hora.", xp: 0, hp: -15, feedback: "Errado! Desenvolva de forma organizada, SEM interromper outros membros." },
+                    { text: "Espera ele terminar completamente o raciocínio ou a parte dele para, de forma educada e sem ser rude, fazer um adendo rápido.", xp: 50, hp: 0, feedback: "Correto! Organização e respeito entre os membros do grupo demonstram profissionalismo.", correct: true },
+                    { text: "Fica fazendo sinais com as mãos e caretas para ele lembrar do que esqueceu.", xp: 10, hp: -10, feedback: "Isso vai distrair a plateia e deixar o colega nervoso." }
+                ]
+            },
+            {
+                title: "A Dança das Mãos",
+                context: "Um aluno da plateia comenta que um dos seus colegas de grupo fica balançando os braços sem sentido e andando de um lado pro outro freneticamente enquanto fala. O que a regra diz sobre gestos?",
+                options: [
+                    { text: "Eles devem reforçar o que você diz e não o contrário. Cuidado com os gestos soltos.", xp: 50, hp: 0, feedback: "Exato! Expressão corporal deve estar em sincronia com a fala.", correct: true },
+                    { text: "Gestos amplos sempre mantêm a plateia acordada, não importa o movimento.", xp: 0, hp: -10, feedback: "Movimento sem propósito causa distração e tontura na plateia." },
+                    { text: "O ideal é colocar as mãos no bolso ou cruzar os braços para não errar.", xp: 10, hp: -15, feedback: "Mãos no bolso demonstra desinteresse. Braços cruzados demonstra postura defensiva." }
+                ]
+            },
+            {
+                title: "O Termômetro da Sala",
+                context: "Você está na metade da apresentação. O clima na sala parece meio morno. Você decide usar o humor e fazer uma pergunta à turma. Por que essa atitude é essencial?",
+                options: [
+                    { text: "Porque assim você ganha tempo para lembrar o que ia falar a seguir.", xp: 10, hp: -10, feedback: "Não é apenas um truque para ganhar tempo." },
+                    { text: "Porque as reações da plateia são um 'termômetro' de como a apresentação está indo, ajudando a ajustar o ritmo.", xp: 50, hp: 0, feedback: "Brilhante! Interagir, usar tecnologia ou humor permite medir o pulso da plateia.", correct: true },
+                    { text: "Porque força os alunos que estão dormindo a passarem vergonha quando você pergunta algo.", xp: 0, hp: -20, feedback: "Nunca use perguntas para expor ou envergonhar a plateia. Seja construtivo." }
+                ]
+            },
+            {
+                title: "O Controle do Tempo",
+                context: "Faltam apenas 5 minutos para o fim do tempo estipulado, mas vocês ainda têm bastante conteúdo. Qual é a decisão mais sábia segundo as regras de ouro?",
+                options: [
+                    { text: "Falar o dobro de rápido para conseguir ler todos os slides até o fim.", xp: 0, hp: -20, feedback: "Falar rápido destrói a compreensão. A plateia é o centro!" },
+                    { text: "Respeitar o tempo pré-determinado, resumindo o final, mas garantindo que sobrem alguns momentos para que a plateia seja ativa (perguntas/comentários).", xp: 50, hp: 0, feedback: "Sensato! Respeitar o tempo e deixar espaço para a plateia mostra domínio e respeito.", correct: true },
+                    { text: "Ignorar o limite de tempo. Se o tema é importante, o professor vai entender que precisa de mais tempo.", xp: 10, hp: -15, feedback: "Desrespeitar o tempo é rude com os próximos grupos e cansa a plateia." }
+                ]
+            },
+            {
+                title: "O Golpe Final (A Conclusão)",
+                context: "Chegou a hora de encerrar. O slide final diz apenas 'FIM'. Como você deve verbalmente concluir a sua apresentação para que ela seja inesquecível?",
+                options: [
+                    { text: "Dizer: 'Era isso que a gente tinha pra falar. Alguém tem dúvida?'", xp: 0, hp: -20, feedback: "Morno e sem energia. Uma finalização fraca estraga uma boa apresentação." },
+                    { text: "Demonstrar o que o aprendizado mudou na sua vida e na sociedade, propor uma solução ou levantar uma discussão para o futuro.", xp: 50, hp: 0, feedback: "Épico! É assim que se deixa um legado ao final de uma apresentação.", correct: true },
+                    { text: "Pedir desculpas por qualquer erro que possa ter ocorrido durante a fala.", xp: 10, hp: -10, feedback: "Focar em erros no final deixa uma impressão negativa na mente de todos." }
+                ]
+            },
+            {
+                title: "A Despedida Honrosa",
+                context: "Você concluiu maravilhosamente bem, provocando uma reflexão na sala. Todos estão em silêncio processando. Antes de virar as costas e sentar, o que você DEVE fazer obrigatoriamente?",
+                options: [
+                    { text: "Sempre se despedir e agradecer a plateia e ao professor (ou líder).", xp: 50, hp: 0, feedback: "A gratidão é a marca de um verdadeiro Ninja das Apresentações.", correct: true },
+                    { text: "Sair rapidamente do palco para não tomar mais tempo.", xp: 0, hp: -15, feedback: "Sair sem agradecer soa arrogante ou fugidio." },
+                    { text: "Cobrar que batam palmas.", xp: 0, hp: -20, feedback: "Aplausos devem ser conquistados, não exigidos." }
+                ]
+            },
+            {
+                title: "O Palco é Seu",
+                context: "Nas notas finais do pergaminho do mestre, ele define a apresentação não apenas como um trabalho escolar, mas como um evento maior. Qual é a mentalidade definitiva que você deve levar para o palco?",
+                options: [
+                    { text: "Fazer uma apresentação é um sofrimento necessário para conseguir o diploma.", xp: 0, hp: -15, feedback: "Com essa energia, a plateia vai sofrer com você." },
+                    { text: "Fazer uma apresentação é dar um SHOW, onde você é o ATOR PRINCIPAL. Brilhe!", xp: 50, hp: 0, feedback: "Absolutamente! Aproprie-se do palco e brilhe, mestre!", correct: true },
+                    { text: "Fazer uma apresentação é apenas repassar informações técnicas que estão no PDF.", xp: 10, hp: -10, feedback: "Falta emoção. Informação pura pode ser lida por e-mail; ao vivo exige espetáculo." }
+                ]
+            },
+            {
+                title: "O Teste da Vida",
+                context: "Você finalizou todas as etapas. O mestre Fernando escreveu um recado final sobre essas dicas de apresentação. Qual foi?",
+                options: [
+                    { text: "'Essas dicas são para usar só até o fim do ensino médio.'", xp: 0, hp: -10, feedback: "Errado. O aprendizado vai muito além." },
+                    { text: "'Essas dicas são apenas para quem quer ser professor.'", xp: 0, hp: -10, feedback: "Todos os profissionais precisam saber apresentar ideias." },
+                    { text: "'Essas dicas são para toda vida! Aproveitem!'", xp: 50, hp: 0, feedback: "Exato! Comunicação e postura abrem portas para o resto da vida.", correct: true }
+                ]
+            }
+        ];
+
+        // Variáveis de Estado
+        let currentMission = 0;
+        let hp = 100;
+        let xp = 0;
+        let timeRemaining = 40 * 60; // 40 minutos em segundos
+        let timerInterval;
+
+        const ranks = [
+            { min: 0, name: "Estudante da Academia", color: "text-gray-400" },
+            { min: 200, name: "Genin", color: "text-green-400" },
+            { min: 400, name: "Chunin", color: "text-blue-400" },
+            { min: 600, name: "Jonin", color: "text-purple-400" },
+            { min: 700, name: "Hokage das Apresentações", color: "text-yellow-400" }
+        ];
+
+        // Elementos DOM
+        const startScreen = document.getElementById('start-screen');
+        const missionScreen = document.getElementById('mission-screen');
+        const endScreen = document.getElementById('end-screen');
+        const modal = document.getElementById('feedback-modal');
+        const optionsContainer = document.getElementById('options-container');
+
+        // Inicialização
+        function startGame() {
+            startScreen.classList.add('hidden');
+            missionScreen.classList.replace('hidden', 'flex');
+            startTimer();
+            loadMission();
+        }
+
+        function startTimer() {
+            const timerEl = document.getElementById('timer');
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                let m = Math.floor(timeRemaining / 60).toString().padStart(2, '0');
+                let s = (timeRemaining % 60).toString().padStart(2, '0');
+                timerEl.innerText = `${m}:${s}`;
+
+                if (timeRemaining <= 300) timerEl.classList.replace('text-yellow-400', 'text-red-500');
+
+                if (timeRemaining <= 0) {
+                    gameOver("O Tempo Esgotou!");
+                }
+            }, 1000);
+        }
+
+        function loadMission() {
+            if (currentMission >= missions.length) {
+                victory();
+                return;
+            }
+
+            const m = missions[currentMission];
+            document.getElementById('mission-number').innerText = `Missão ${currentMission + 1}/${missions.length}`;
+            document.getElementById('mission-title').innerText = m.title;
+            document.getElementById('mission-context').innerText = m.context;
+
+            optionsContainer.innerHTML = '';
+            
+            // Embaralhar opções
+            const shuffledOptions = [...m.options].sort(() => Math.random() - 0.5);
+
+            shuffledOptions.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-option bg-gray-800 border border-gray-600 rounded-lg p-4 text-left text-sm hover:bg-gray-700 transition-all flex items-start gap-3';
+                btn.innerHTML = `<span class="bg-blue-900 text-blue-300 rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 mt-0.5">${String.fromCharCode(65 + index)}</span> <span>${opt.text}</span>`;
+                btn.onclick = () => selectOption(opt);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectOption(option) {
+            // Atualizar status
+            xp += option.xp;
+            hp += option.hp;
+            
+            if (hp > 100) hp = 100;
+            if (hp <= 0) {
+                hp = 0;
+                updateHUD();
+                gameOver("Você perdeu todo o seu HP!");
+                return;
+            }
+
+            updateHUD();
+            showFeedback(option.correct, option.feedback);
+        }
+
+        function updateHUD() {
+            // Atualizar Barras
+            document.getElementById('hp-bar').style.width = `${hp}%`;
+            document.getElementById('hp-text').innerText = `${hp}/100`;
+            
+            const maxXP = 750; // XP máximo possível (15 * 50)
+            const xpPercent = Math.min((xp / maxXP) * 100, 100);
+            document.getElementById('xp-bar').style.width = `${xpPercent}%`;
+            document.getElementById('xp-text').innerText = xp;
+
+            // Cores do HP
+            const hpBar = document.getElementById('hp-bar');
+            if (hp > 50) hpBar.className = 'bg-green-500 h-2 rounded-full transition-all';
+            else if (hp > 20) hpBar.className = 'bg-yellow-500 h-2 rounded-full transition-all';
+            else hpBar.className = 'bg-red-500 h-2 rounded-full transition-all animate-pulse';
+
+            // Atualizar Rank
+            let currentRank = ranks[0];
+            for (let r of ranks) {
+                if (xp >= r.min) currentRank = r;
+            }
+            const rankEl = document.getElementById('player-rank');
+            rankEl.innerText = currentRank.name;
+            rankEl.className = `font-bold ${currentRank.color}`;
+        }
+
+        function showFeedback(isCorrect, text) {
+            const title = document.getElementById('feedback-title');
+            title.innerText = isCorrect ? "Sucesso!" : "Dica do Sensei...";
+            title.className = isCorrect ? "text-2xl font-bold mb-2 text-green-400" : "text-2xl font-bold mb-2 text-red-400";
+            document.getElementById('feedback-text').innerText = text;
+            modal.classList.replace('hidden', 'flex');
+        }
+
+        function nextMission() {
+            modal.classList.replace('flex', 'hidden');
+            currentMission++;
+            loadMission();
+        }
+
+        function gameOver(reason) {
+            clearInterval(timerInterval);
+            missionScreen.classList.replace('flex', 'hidden');
+            modal.classList.replace('flex', 'hidden'); // Garantir que modal feche
+            
+            const end = document.getElementById('end-screen');
+            end.classList.replace('hidden', 'block');
+            document.getElementById('end-title').innerText = "Missão Falha!";
+            document.getElementById('end-title').className = "text-3xl font-bold text-red-500 mb-2";
+            document.getElementById('end-icon').className = "fas fa-skull text-5xl text-gray-500 mb-4";
+            document.getElementById('end-message').innerText = reason + " Estude mais os pergaminhos antes da próxima apresentação.";
+            
+            document.getElementById('final-xp').innerText = xp;
+            document.getElementById('final-hp').innerText = hp;
+            document.getElementById('end-rank').innerText = document.getElementById('player-rank').innerText;
+        }
+
+        function victory() {
+            clearInterval(timerInterval);
+            missionScreen.classList.replace('flex', 'hidden');
+            
+            const end = document.getElementById('end-screen');
+            end.classList.replace('hidden', 'block');
+            
+            document.getElementById('final-xp').innerText = xp;
+            document.getElementById('final-hp').innerText = hp;
+            document.getElementById('end-rank').innerText = "Rank Final: " + document.getElementById('player-rank').innerText;
+            
+            if (xp === 750) {
+                document.getElementById('end-message').innerText = "Você não cometeu nenhum erro! O próprio mestre Fernando estaria orgulhoso.";
+            } else {
+                document.getElementById('end-message').innerText = "Excelente trabalho ninja! Você está pronto para enfrentar qualquer plateia.";
+            }
+        }
+    </script>
+</body>
+</html>
