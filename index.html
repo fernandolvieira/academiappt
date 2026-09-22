@@ -79,7 +79,7 @@
         <div id="start-screen" class="glass rounded-xl p-8 text-center anime-border">
             <h1 class="text-3xl font-bold text-red-500 mb-4">Exame de Sobrevivência: Apresentador Ninja</h1>
             <p class="text-gray-300 mb-6 leading-relaxed">
-                Vocês têm 40 minutos para provar seu valor. Enfrentem as 20 missões reais e sobrevivam à rodada relâmpago "Ninja ou Noob". Decidam em equipe!
+                Vocês têm 40 minutos para provar seu valor. 20 missões aleatórias foram selecionadas do grande pergaminho. Sobrevivam a elas e encarem a rodada relâmpago "Ninja ou Noob".
             </p>
             
             <div class="mb-6 text-left">
@@ -156,24 +156,25 @@
     </div>
 
     <script>
-        // Substitua esta URL pelo link do seu Google Apps Script (Web App)
         const GOOGLE_SHEETS_WEBHOOK = "https://script.google.com/macros/s/AKfycbyWq8tsBpNj7S0Q0_LbXr0ifQCvKlxY5SyF1fGCFhoKNo6YOkEan-Z4LlOmaafRNF1V/exec";
 
         let groupName = "";
+        let selectedMissions = [];
         
+        // Banco total com 30 missões
         const missions = [
             {
                 title: "A Forja dos Slides",
-                context: "Você e sua equipe estão montando a apresentação no PowerPoint. O colega 'João' copia três parágrafos de texto da Wikipedia e cola em um slide, dizendo que 'assim ninguém esquece o que falar'. Como você corrige essa situação com base no pergaminho das regras?",
+                context: "Você e sua equipe estão montando a apresentação no PowerPoint. O colega 'João' copia três parágrafos de texto da Wikipedia e cola em um slide, dizendo que 'assim ninguém esquece o que falar'.",
                 options: [
                     { text: "Deixa o texto, mas pede para ele ler bem rápido durante a apresentação.", xp: 0, hp: -20, feedback: "Erro crítico! A plateia não quer ver você lendo slides." },
                     { text: "Reduz para um texto menor e coloca duas imagens para ilustrar.", xp: 10, hp: -10, feedback: "Quase. A regra diz apenas UMA imagem por slide." },
-                    { text: "Remove os parágrafos. Usa recursos audiovisuais, deixando apenas UMA frase e UMA imagem por slide, reservando a explicação para a fala.", xp: 50, hp: 0, feedback: "Exato! Slides não devem ter muito texto.", correct: true }
+                    { text: "Remove os parágrafos, deixando apenas UMA frase e UMA imagem por slide, reservando a explicação para a fala.", xp: 50, hp: 0, feedback: "Exato! Slides não devem ter muito texto.", correct: true }
                 ]
             },
             {
                 title: "O Ritual de Preparação",
-                context: "Um integrante sugere: 'Vamos apenas ler o papel na hora, não precisamos ensaiar, improviso é a alma do ninja'. O que a doutrina de apresentação diz sobre isso?",
+                context: "Um integrante sugere: 'Vamos apenas ler o papel na hora, não precisamos ensaiar, improviso é a alma do ninja'.",
                 options: [
                     { text: "Você deve estudar incansavelmente até que o assunto flua de forma natural. Ensaiar é essencial.", xp: 50, hp: 0, feedback: "Perfeito! A naturalidade não vem do improviso, mas de muito estudo.", correct: true },
                     { text: "Ele está certo. Ensaiar deixa a apresentação robótica.", xp: 0, hp: -20, feedback: "Errado! Sem ensaio, vocês vão gaguejar e perder a organização." },
@@ -191,7 +192,7 @@
             },
             {
                 title: "O Genjutsu do Apagão (Imprevistos)",
-                context: "A lâmpada do projetor queima misteriosamente e um membro do grupo não veio à aula. Qual é a postura de um verdadeiro ninja?",
+                context: "A lâmpada do projetor queima misteriosamente e um membro do grupo não veio à aula.",
                 options: [
                     { text: "Pedir desculpas ao professor e pedir para apresentar na próxima semana.", xp: 0, hp: -30, feedback: "Não dê desculpas! O mundo real não perdoa falhas." },
                     { text: "Não dar desculpas e se adaptar. Fazer a apresentação verbalmente e cobrir a parte do colega.", xp: 50, hp: 0, feedback: "Sensacional! Esteja pronto para imprevistos.", correct: true },
@@ -227,7 +228,7 @@
             },
             {
                 title: "Trabalho em Equipe",
-                context: "Seu colega está no meio da explicação, mas esqueceu um detalhe importante. O que você faz?",
+                context: "Seu colega está no meio da explicação, mas esqueceu um detalhe importante.",
                 options: [
                     { text: "Interrompe ele educadamente e complementa.", xp: 0, hp: -15, feedback: "Errado! Desenvolva sem interromper." },
                     { text: "Espera ele terminar completamente o raciocínio para fazer um adendo rápido.", xp: 50, hp: 0, feedback: "Correto! Respeito demonstra profissionalismo.", correct: true },
@@ -262,7 +263,7 @@
                 ]
             },
             {
-                title: "O Golpe Final (A Conclusão)",
+                title: "O Golpe Final",
                 context: "Como você deve concluir a sua apresentação verbalmente?",
                 options: [
                     { text: "Dizer: 'Era isso. Dúvidas?'", xp: 0, hp: -20, feedback: "Morno e sem energia." },
@@ -272,7 +273,7 @@
             },
             {
                 title: "A Despedida Honrosa",
-                context: "Antes de sentar, o que você DEVE fazer?",
+                context: "Antes de sentar ao concluir a fala, o que você DEVE fazer?",
                 options: [
                     { text: "Sempre se despedir e agradecer a plateia e ao professor.", xp: 50, hp: 0, feedback: "A gratidão é a marca de um ninja.", correct: true },
                     { text: "Sair rapidamente do palco.", xp: 0, hp: -15, feedback: "Soa fugidio." },
@@ -281,7 +282,7 @@
             },
             {
                 title: "O Palco é Seu",
-                context: "Qual é a mentalidade definitiva que você deve levar para o palco?",
+                context: "Qual é a mentalidade definitiva que você deve levar para a apresentação?",
                 options: [
                     { text: "Apresentação é um sofrimento necessário.", xp: 0, hp: -15, feedback: "Energia ruim passa para a plateia." },
                     { text: "Fazer uma apresentação é dar um SHOW, onde você é o ATOR PRINCIPAL.", xp: 50, hp: 0, feedback: "Absolutamente! Brilhe!", correct: true },
@@ -297,50 +298,139 @@
                     { text: "Essas dicas são para toda vida! Comunicação abre portas.", xp: 50, hp: 0, feedback: "Exato! Para toda a vida.", correct: true }
                 ]
             },
-            // NOVAS 5 QUESTÕES DE GRANDES MESTRES
             {
                 title: "Mestre Jobs e a Regra de Três",
-                context: "Steve Jobs frequentemente dividia as novidades de suas apresentações da Apple em blocos de três. Qual o impacto psicológico dessa técnica ninja na sua plateia?",
+                context: "Steve Jobs frequentemente dividia as novidades em blocos de três. Qual o impacto psicológico dessa técnica?",
                 options: [
                     { text: "Economiza bateria do projetor.", xp: 0, hp: -10, feedback: "Não tem relação." },
-                    { text: "Ajuda na memorização, clareza e torna a informação muito mais fácil de digerir pelo cérebro humano.", xp: 50, hp: 0, feedback: "Correto! O cérebro adora o número 3.", correct: true },
-                    { text: "É apenas uma coincidência de design.", xp: 10, hp: -10, feedback: "Foi uma estratégia de comunicação brilhante." }
+                    { text: "Ajuda na memorização, clareza e torna a informação mais fácil de digerir.", xp: 50, hp: 0, feedback: "Correto! O cérebro adora o número 3.", correct: true },
+                    { text: "É apenas uma coincidência de design.", xp: 10, hp: -10, feedback: "Foi uma estratégia brilhante." }
                 ]
             },
             {
                 title: "O Mosquito de Bill Gates",
-                context: "Em um TED Talk de 2009 sobre malária, Bill Gates soltou mosquitos num vidro aberto no palco, dizendo: 'Não há razão para só os pobres passarem por isso'. O que essa atitude representa?",
+                context: "Ao falar sobre malária, Bill Gates soltou mosquitos num vidro aberto no palco. O que essa atitude representa?",
                 options: [
-                    { text: "Usar um elemento visual (prop) inesperado para criar uma conexão emocional poderosa e inesquecível.", xp: 50, hp: 0, feedback: "Exato! Ele materializou o problema.", correct: true },
-                    { text: "Uma brincadeira perigosa que tirou o foco do assunto.", xp: 0, hp: -15, feedback: "Os mosquitos não tinham malária, e a mensagem foi mundial." },
+                    { text: "Usar um elemento visual inesperado para criar conexão emocional poderosa.", xp: 50, hp: 0, feedback: "Exato! Ele materializou o problema.", correct: true },
+                    { text: "Uma brincadeira perigosa que tirou o foco do assunto.", xp: 0, hp: -15, feedback: "Foi marcante, não uma distração." },
                     { text: "Uma forma de enrolar porque os slides deram defeito.", xp: 0, hp: -10, feedback: "Foi milimetricamente planejado." }
                 ]
             },
             {
-                title: "O Minimalismo Zen (Garr Reynolds)",
-                context: "O estilo Zen de apresentações dita que a simplicidade é o ápice do design. Se você tem dados financeiros complexos do semestre todo, o que um ninja Zen faz?",
+                title: "O Minimalismo Zen",
+                context: "O estilo Zen dita que a simplicidade é o ápice do design. Com dados complexos, o que o ninja faz?",
                 options: [
-                    { text: "Coloca a planilha inteira do Excel no slide para provar que pesquisou.", xp: 0, hp: -25, feedback: "Isso mata a plateia de tédio visual." },
-                    { text: "Não apresenta dados, pois números não são Zen.", xp: 0, hp: -15, feedback: "Dados são importantes, é preciso saber mostrá-los." },
-                    { text: "Destaca apenas o número mais importante em fonte grande e explica o resto do contexto verbalmente.", xp: 50, hp: 0, feedback: "Correto! O slide é suporte, você é a apresentação.", correct: true }
+                    { text: "Coloca a planilha inteira do Excel no slide para provar pesquisa.", xp: 0, hp: -25, feedback: "Isso mata a plateia de tédio visual." },
+                    { text: "Não apresenta dados, pois números não são Zen.", xp: 0, hp: -15, feedback: "Dados são importantes." },
+                    { text: "Destaca apenas o número mais importante em fonte grande e explica o resto.", xp: 50, hp: 0, feedback: "Correto! O slide é apenas o suporte.", correct: true }
                 ]
             },
             {
-                title: "A Arte do Storytelling (Carmine Gallo)",
-                context: "Carmine Gallo, especialista em comunicação, diz que cérebros se conectam com histórias. Você vai apresentar o projeto de um aplicativo escolar. Como você introduz?",
+                title: "A Arte do Storytelling",
+                context: "Você vai apresentar o projeto de um aplicativo. Como você introduz usando o poder das histórias?",
                 options: [
-                    { text: "Começa contando a história do 'Joãozinho', um aluno que perdia as datas de prova e como o app resolveu a vida dele.", xp: 50, hp: 0, feedback: "Exato! Histórias criam empatia imediata.", correct: true },
-                    { text: "Começa lendo a lista de requisitos técnicos e as linhas de código do servidor.", xp: 0, hp: -20, feedback: "Isso afasta quem não é da área técnica." },
-                    { text: "Abre direto com o custo de desenvolvimento do projeto.", xp: 10, hp: -10, feedback: "Guarde os números para quando já tiver a atenção deles." }
+                    { text: "Conta a história de um aluno que sofria com um problema e como o app resolveu a vida dele.", xp: 50, hp: 0, feedback: "Exato! Histórias criam empatia imediata.", correct: true },
+                    { text: "Começa lendo a lista de requisitos técnicos do servidor.", xp: 0, hp: -20, feedback: "Isso afasta quem não é da área." },
+                    { text: "Abre direto com o custo do projeto.", xp: 10, hp: -10, feedback: "Guarde os números para depois." }
                 ]
             },
             {
-                title: "A Única Ideia (Chris Anderson / TED)",
-                context: "O curador do TED defende que uma grande palestra planta apenas UMA ideia na mente das pessoas. Sua equipe quer apresentar 5 tópicos diferentes. Qual a saída ninja?",
+                title: "A Única Ideia",
+                context: "Sua equipe quer apresentar 5 tópicos diferentes. Qual a saída ninja para não confundir a mente da plateia?",
                 options: [
-                    { text: "Falar super rápido para caber as 5 ideias no tempo.", xp: 0, hp: -20, feedback: "A plateia não vai lembrar de nenhuma." },
-                    { text: "Encontrar o fio condutor (a ideia central) que liga os 5 tópicos e construir a narrativa em torno dela.", xp: 50, hp: 0, feedback: "Genial! Subordine todos os tópicos a um tema central.", correct: true },
+                    { text: "Falar super rápido para caber os 5 tópicos no tempo.", xp: 0, hp: -20, feedback: "A plateia não lembrará de nenhum." },
+                    { text: "Encontrar o fio condutor que liga os 5 tópicos e focar nessa narrativa central.", xp: 50, hp: 0, feedback: "Genial! Subordine tópicos a um tema central.", correct: true },
                     { text: "Cortar 4 tópicos aleatoriamente na hora H.", xp: 10, hp: -10, feedback: "Isso destrói o preparo do grupo." }
+                ]
+            },
+            {
+                title: "O Som e a Fúria",
+                context: "Ao falar para uma sala cheia sem microfone, qual deve ser a técnica de projeção vocal do Ninja?",
+                options: [
+                    { text: "Falar no volume normal de conversa e quem não ouvir que chegue mais perto.", xp: 0, hp: -20, feedback: "Se a plateia não escuta, você perdeu a apresentação." },
+                    { text: "Projetar a voz para alcançar as pessoas da última fileira, sem precisar gritar.", xp: 50, hp: 0, feedback: "Isso! Articulação e volume adequado são vitais.", correct: true },
+                    { text: "Gritar a plenos pulmões o tempo todo para mostrar autoridade.", xp: 10, hp: -15, feedback: "Gritar passa agressividade e danifica suas cordas vocais." }
+                ]
+            },
+            {
+                title: "O Feitiço das Cores",
+                context: "Você escolheu um fundo amarelo claro para o seu slide. Qual cor a fonte do texto deve ter?",
+                options: [
+                    { text: "Branco, para ficar tudo claro e pacífico.", xp: 0, hp: -25, feedback: "Falta de contraste torna impossível a leitura de longe." },
+                    { text: "Preto ou azul escuro, garantindo máximo contraste.", xp: 50, hp: 0, feedback: "Perfeito! Fundo claro exige letra escura. Fundo escuro exige letra clara.", correct: true },
+                    { text: "Amarelo escuro, combinando as paletas.", xp: 10, hp: -15, feedback: "Contraste baixo, cansa a vista da plateia." }
+                ]
+            },
+            {
+                title: "Armadilha dos Tiques",
+                context: "Durante os ensaios, a equipe nota que você repete 'né', 'tipo assim' e 'então' a cada frase. Qual a estratégia ninja para curar isso?",
+                options: [
+                    { text: "Avisar no início da apresentação que esse é seu jeito de falar.", xp: 0, hp: -15, feedback: "Isso soa amador e não resolve o problema." },
+                    { text: "Treinar o uso de pausas curtas e silenciosas no lugar das palavras de preenchimento.", xp: 50, hp: 0, feedback: "Excelente! O silêncio soa como reflexão; o 'né' soa como insegurança.", correct: true },
+                    { text: "Falar cada vez mais rápido para não dar tempo de usar os tiques.", xp: 0, hp: -20, feedback: "Acelerar apenas cria novos problemas de dicção." }
+                ]
+            },
+            {
+                title: "Postura da Estátua",
+                context: "Seu colega apresenta com os braços cruzados ou com a barriga escorada na mesa do professor. Como você avalia essa postura?",
+                options: [
+                    { text: "Desleixada e defensiva. O ninja deve se posicionar com postura ereta, sem se escorar e com braços abertos.", xp: 50, hp: 0, feedback: "Corretíssimo. A postura corporal fala antes da sua voz.", correct: true },
+                    { text: "Tranquila. Mostra que ele está confortável com o ambiente.", xp: 0, hp: -20, feedback: "Conforto em excesso parece desrespeito à plateia." },
+                    { text: "Boa, pois poupa energia para projetar a voz.", xp: 0, hp: -10, feedback: "Postura ereta na verdade ajuda a respirar e projetar melhor a voz." }
+                ]
+            },
+            {
+                title: "O Pânico do 'Deu Branco'",
+                context: "No meio da sua fala, você esquece completamente a próxima frase. O silêncio toma conta por 3 segundos. O que fazer?",
+                options: [
+                    { text: "Pedir desculpas repetidas vezes, dizer que está nervoso e sair correndo.", xp: 0, hp: -25, feedback: "Fugir é o fim da linha para um Ninja." },
+                    { text: "Respirar fundo, olhar suas anotações com calma (ou o slide) e retomar de onde lembrar, sem pânico.", xp: 50, hp: 0, feedback: "Perfeito! A plateia nem se importa com o branco, desde que você mantenha a calma.", correct: true },
+                    { text: "Fingir que tossiu e passar a palavra abruptamente pro colega.", xp: 10, hp: -10, feedback: "Não jogue o problema para os outros." }
+                ]
+            },
+            {
+                title: "A Armadilha do Cinema",
+                context: "Sua equipe tem 10 minutos para apresentar e decidiu usar um vídeo ilustrativo do YouTube. Qual deve ser o limite desse vídeo?",
+                options: [
+                    { text: "Colocar o vídeo de 7 minutos e falar apenas 3 minutos.", xp: 0, hp: -20, feedback: "O professor quer avaliar você, não o dono do canal do YouTube." },
+                    { text: "No máximo 1 a 2 minutos. O vídeo é um auxílio, não o protagonista.", xp: 50, hp: 0, feedback: "Sensato! Multimídia deve complementar sua fala, não substituí-la.", correct: true },
+                    { text: "Assistir o vídeo no mudo enquanto vocês lêem as legendas em voz alta.", xp: 0, hp: -15, feedback: "Experiência terrível e redundante." }
+                ]
+            },
+            {
+                title: "A Direção do Olhar",
+                context: "Você é muito tímido e tem medo de olhar para a turma. Qual o truque dos mestres para manter o contato visual adequado?",
+                options: [
+                    { text: "Olhar para as próprias mãos o tempo todo.", xp: 0, hp: -15, feedback: "Quebra a conexão totalmente com a plateia." },
+                    { text: "Distribuir o olhar pelas pessoas. Se estiver nervoso, olhe para a testa ou pouco acima da cabeça delas.", xp: 50, hp: 0, feedback: "Exato! Passa a sensação de contato visual sem o peso da intimidade.", correct: true },
+                    { text: "Olhar fixamente e sem piscar para o professor.", xp: 0, hp: -20, feedback: "Isso intimida o avaliador e ignora o resto da turma." }
+                ]
+            },
+            {
+                title: "Chuva de Shurikens (Perguntas da Plateia)",
+                context: "Alguém da plateia faz uma pergunta cuja resposta você não sabe de jeito nenhum. Como você escapa com honra?",
+                options: [
+                    { text: "Inventar uma resposta muito complexa com palavras difíceis para confundi-lo.", xp: 0, hp: -25, feedback: "Mentir em público destrói sua credibilidade." },
+                    { text: "Admitir que não tem a resposta exata agora, mas prometer pesquisar e responder depois, ou perguntar o que a turma acha.", xp: 50, hp: 0, feedback: "Honestidade é o caminho ninja. Transforme em oportunidade.", correct: true },
+                    { text: "Atacar o colega perguntando por que ele está querendo te prejudicar.", xp: 0, hp: -30, feedback: "Defensiva agressiva, você acaba de perder a sala toda." }
+                ]
+            },
+            {
+                title: "O Pergaminho de Backup",
+                context: "Você montou a apresentação linda no PC de casa. Como você garante que ela vai rodar na escola?",
+                options: [
+                    { text: "Leva apenas no seu pendrive com fita adesiva estragado.", xp: 0, hp: -20, feedback: "Confiar em um único meio físico é suicídio." },
+                    { text: "Salva em nuvem (Drive), manda pro próprio email, leva no pendrive E exporta em PDF para caso o PowerPoint falhe.", xp: 50, hp: 0, feedback: "Um verdadeiro Ninja da Redundância! Preparo impecável.", correct: true },
+                    { text: "Espera que alguém da equipe tenha lembrado de salvar.", xp: 0, hp: -30, feedback: "A responsabilidade era sua. Missão falha." }
+                ]
+            },
+            {
+                title: "O Ritual de Calmaria",
+                context: "Faltam 2 minutos para você subir no palco. Seu coração acelera, mãos suam. O que a doutrina ensina?",
+                options: [
+                    { text: "Tomar dois energéticos para ligar no 220v.", xp: 0, hp: -20, feedback: "Aumenta a ansiedade e gera tremedeira na voz." },
+                    { text: "Respirar fundo e devagar, focar no fato de que você domina o tema e lembrar que a plateia torce pelo seu sucesso.", xp: 50, hp: 0, feedback: "Controle absoluto do Chakra! O nervosismo é normal, o foco ajuda a canalizá-lo.", correct: true },
+                    { text: "Começar a ler os slides da equipe inteira freneticamente.", xp: 0, hp: -10, feedback: "Só aumenta o caos mental. Essa hora é de focar." }
                 ]
             }
         ];
@@ -362,14 +452,13 @@
             { text: "Encontrar um meme ou referência atual que tenha conexão real com a matéria para quebrar o gelo.", answer: "Ninja" },
             { text: "Colocar um gráfico complexo cheio de pequenas fatias e não explicar o que significa.", answer: "Noob" },
             { text: "Passar o corretor ortográfico e pedir para outra pessoa ler os slides antes do dia final.", answer: "Ninja" },
-            { text: "Apresentar com as duas mãos enfiadas fundo no bolso da blusa de frio.", answer: "Noob" },
+            { text: "Apresentar com as duas mãos enfiadas fundo no bolso da calça.", answer: "Noob" },
             { text: "Demonstrar entusiasmo genuíno pelo tema, mesmo que seja um assunto acadêmico denso.", answer: "Ninja" },
             { text: "Passar os últimos 10 slides em 30 segundos porque o professor avisou que o tempo acabou.", answer: "Noob" },
             { text: "Deixar o último slide com os contatos do grupo e agradecer formalmente pelo tempo de todos.", answer: "Ninja" }
         ];
 
-        // Estado do jogo
-        let currentPhase = 1; // 1 = Missoes, 2 = NinjaNoob
+        let currentPhase = 1; 
         let currentMission = 0;
         let currentNN = 0;
         let hp = 100;
@@ -394,6 +483,9 @@
             groupName = input;
             document.getElementById('group-display-name').innerText = groupName;
             
+            // Seleciona 20 questões aleatórias do pool principal (30 questões)
+            selectedMissions = [...missions].sort(() => Math.random() - 0.5).slice(0, 20);
+
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('mission-screen').classList.replace('hidden', 'flex');
             startTimer();
@@ -420,6 +512,7 @@
             document.getElementById('hp-bar').style.width = `${hp}%`;
             document.getElementById('hp-text').innerText = `${hp}/100`;
             
+            // XP máximo: 20 questões * 50xp + 20 NN * 10xp = 1200 xp máximo possível agora.
             const maxXP = 1200; 
             const xpPercent = Math.min((xp / maxXP) * 100, 100);
             document.getElementById('xp-bar').style.width = `${xpPercent}%`;
@@ -439,9 +532,8 @@
             rankEl.className = `font-bold ${currentRank.color}`;
         }
 
-        // --- FASE 1: MISSÕES ---
         function loadMission() {
-            if (currentMission >= missions.length) {
+            if (currentMission >= selectedMissions.length) {
                 currentPhase = 2;
                 document.getElementById('mission-screen').classList.replace('flex', 'hidden');
                 document.getElementById('nn-screen').classList.replace('hidden', 'flex');
@@ -449,14 +541,15 @@
                 return;
             }
 
-            const m = missions[currentMission];
-            document.getElementById('mission-number').innerText = `Missão Principal ${currentMission + 1}/${missions.length}`;
+            const m = selectedMissions[currentMission];
+            document.getElementById('mission-number').innerText = `Missão Principal ${currentMission + 1}/20`;
             document.getElementById('mission-title').innerText = m.title;
             document.getElementById('mission-context').innerText = m.context;
 
             const optionsContainer = document.getElementById('options-container');
             optionsContainer.innerHTML = '';
             
+            // Embaralha sempre as alternativas da questão carregada
             const shuffledOptions = [...m.options].sort(() => Math.random() - 0.5);
 
             shuffledOptions.forEach((opt, index) => {
@@ -486,7 +579,6 @@
             document.getElementById('feedback-modal').classList.replace('hidden', 'flex');
         }
 
-        // --- FASE 2: NINJA OU NOOB ---
         function loadNN() {
             if (currentNN >= nnQuestions.length) {
                 victory();
@@ -535,7 +627,6 @@
             }
         }
 
-        // --- ENCERRAMENTO ---
         function gameOver(reason) {
             clearInterval(timerInterval);
             document.getElementById('mission-screen').classList.replace('flex', 'hidden');
@@ -551,7 +642,7 @@
             document.getElementById('mission-screen').classList.replace('flex', 'hidden');
             document.getElementById('nn-screen').classList.replace('flex', 'hidden');
             
-            let msg = xp === 1200 ? "Perfeição absoluta! O próprio Steve Jobs estaria orgulhoso." : "Excelente trabalho ninja! Você está pronto para enfrentar qualquer plateia.";
+            let msg = xp === 1200 ? "Perfeição absoluta! O rank de Hokage é indiscutível." : "Excelente trabalho ninja! Você está pronto para enfrentar qualquer plateia.";
             showEndScreen("Exame Concluído!", "text-yellow-400", "fas fa-trophy text-yellow-500", msg);
             saveToSheets();
         }
@@ -571,7 +662,6 @@
             document.getElementById('end-rank').innerText = "Rank Final: " + document.getElementById('player-rank').innerText;
         }
 
-        // Conexão via Google Apps Script (Web App)
         function saveToSheets() {
             const statusEl = document.getElementById('save-status');
             const payload = {
@@ -581,15 +671,9 @@
                 rank: document.getElementById('player-rank').innerText
             };
 
-            if(GOOGLE_SHEETS_WEBHOOK === "URL_DO_SEU_WEB_APP_AQUI") {
-                statusEl.innerText = "Atenção: O salvamento está desativado (URL do Webhook não configurada).";
-                statusEl.className = "text-sm font-bold text-gray-400 mt-4";
-                return;
-            }
-
             fetch(GOOGLE_SHEETS_WEBHOOK, {
                 method: 'POST',
-                mode: 'no-cors', // Evita erros de CORS no navegador
+                mode: 'no-cors', 
                 headers: { 'Content-Type': 'text/plain' },
                 body: JSON.stringify(payload)
             }).then(() => {
